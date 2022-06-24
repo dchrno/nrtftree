@@ -1191,6 +1191,10 @@ namespace Net.Sgoliver.NRtfTree
                         !ChildNodes[indkw].NodeKey.Equals("info") &&
                         !ChildNodes[indkw].NodeKey.Equals("pict") &&
                         !ChildNodes[indkw].NodeKey.Equals("object") &&
+                        !ChildNodes[indkw].NodeKey.Equals("themedata") && // MS Office
+                        !ChildNodes[indkw].NodeKey.Equals("datastore") && // MS Office
+                        !ChildNodes[indkw].NodeKey.Equals("latentstyles") && // MS Office
+                        !ChildNodes[indkw].NodeKey.Equals("colorschememapping") && // MS Office
                         !ChildNodes[indkw].NodeKey.Equals("fldinst")))
                     {
                         if (ChildNodes != null)
@@ -1209,7 +1213,12 @@ namespace Net.Sgoliver.NRtfTree
                 else if (NodeType == RtfNodeType.Control)
                 {
                     if (NodeKey == "'")
+                    {
+                        if (PreviousNode.NodeType != RtfNodeType.Keyword || !PreviousNode.NodeKey.Equals("u"))
+                        {
                         res.Append(DecodeControlChar(Parameter, tree.GetEncoding()));
+                        }
+                    }
                     else if (NodeKey == "~")  // non-breaking space
                         res.Append(" ");
                 }
@@ -1230,7 +1239,9 @@ namespace Net.Sgoliver.NRtfTree
                 else if (NodeType == RtfNodeType.Keyword)
                 {
                     if (NodeKey.Equals("par"))
-                        res.AppendLine("");
+                        res.AppendLine();
+                    else if (NodeKey.Equals("row"))
+                        res.AppendLine();
                     else if (NodeKey.Equals("tab"))
                         res.Append("\t");
                     else if (NodeKey.Equals("line"))
